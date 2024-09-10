@@ -8,15 +8,15 @@
 
 /*	-INFORMATION-
 	Subject:	Class
-	Effect:		This script adds a class called "Blood Hunter" (version of 11 Feb 2020)
+	Effect:		This script adds a class called "Blood Hunter" (version of 14 Feb 2023)
 				and the four subclasses for it: "Order of the Ghostslayer",
 				"Order of the Profane Soul", "Order of the Mutant", and "Order of the Lycan"
 
-				This is taken from the DMs Guild website (https://www.dmsguild.com/product/301641/)
+				This is taken from D&D Beyond's website (https://www.dndbeyond.com/classes/357975-blood-hunter)
 				This class and subclasses are made by Matthew Mercer
 
-	Code by:	Smashman & MorePurpleMoreBetter
-	Date:		2020-03-03 (sheet v13.0.0beta27)
+	Code by:	Smashman & MorePurpleMoreBetter (edited by calexena)
+	Date:		2024-09-10 (sheet v13.2.0)
 
 	Please support the creator of this content (Matthew Mercer) and download his material from the DMs Guild website:
 	https://www.dmsguild.com/browse.php?x=0&y=0&author=Matthew%20Mercer
@@ -25,15 +25,15 @@
 	result in the wrong amount of spells/cantrips being asked for in the spell selection dialogues.
 */
 
-var iFileName = "Blood Hunter 2023 [Matthew Mercer's work, transcribed by Smashman & MPMB].js";
+var iFileName = "Blood Hunter 2023 [Matthew Mercer's work, transcribed by Smashman & MPMB, edited by calexena].js";
 RequiredSheetVersion("13.0.6");
 
 SourceList["MM:BH"] = {
 	name : "Matthew Mercer: Blood Hunter Class 2023",
 	abbreviation : "MM:BH",
-	group : "Dungeon Masters Guild",
+	group : "D&D Beyond",
 	url : "https://www.dndbeyond.com/classes/357975-blood-hunter",
-	date : "2020/02/11"
+	date : "2023/02/14"
 };
 
 // Add a persistent function, as a local variable it won't be usable after re-opening the sheet
@@ -45,7 +45,7 @@ ClassList["blood hunter"] = {
 	regExpSearch : /^(?=.*blood)(?=.*hunter).*$/i,
 	name : "Blood Hunter",
 	source : [["MM:BH", 0]],
-	primaryAbility : "Strength or Dexterity, and Intelligence/Wisdom",
+	primaryAbility : "Strength or Dexterity, and Intelligence or Wisdom",
 	prereqs : "Strength 13 or Dexterity 13, and Intelligence 13",
 	die : 10,
 	improvements : [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5],
@@ -88,33 +88,30 @@ ClassList["blood hunter"] = {
 			}),
 			recovery : "short rest",
 			extraname : "Blood Curse",
-			extrachoices : ["Blood Curse of the Anxious", "Blood Curse of Binding", "Blood Curse of Bloated Agony", "Blood Curse of Exposure", "Blood Curse of the Eyeless", "Blood Curse of the Fallen Puppet", "Blood Curse of the Marked", "Blood Curse of the Muddled Mind"],
+			extrachoices : ["Blood Curse of the Anxious", "Blood Curse of Binding", "Blood Curse of Bloated Agony", "Blood Curse of Corrosion",
+					"Blood Curse of the Exorcist", "Blood Curse of Exposure", "Blood Curse of the Eyeless", "Blood Curse of the Fallen Puppet", 
+					"Blood Curse of the Howl", "Blood Curse of the Marked", "Blood Curse of the Muddled Mind", "Blood Curse of the Soul Eater"],
 			extraTimes : levels.map(function (n) {
 				return n < 6 ? 1 : n < 10 ? 2 : n < 14 ? 3 : n < 18 ? 4 : 5;
 			}),
 			"blood curse of the anxious" : {
 				name : "Blood Curse of the Anxious",
 				source : [["MM:BH", 11]],
-				description : " [Amplify 1\xD7 per long rest]" + desc([
-					"As a bonus action, I can make a creature within 30 ft more susceptible to forceful influence",
-					"Until my next turn ends, all Charisma (Intimidation) checks against it are made with adv.",
-					"\u2022 Amplify (once per long rest): Disadv. on next Wis save the target makes before curse ends"
+				description : desc([
+					"As a bonus action, you make a creature within 30ft of you susceptible to forceful influence",
+					"Until the end of your next turn, Cha (Intimidation) checks made against the cursed creature have adv.",
+					"\u2022 Amplify: The next Wisdom saving throw the cursed creature makes has disadv."
 				]),
 				action : [["bonus action", ""]],
-				extraLimitedFeatures : [{
-					additional : "Amplify Blood Curse of the Anxious",
-					usages : 1,
-					recovery : "long rest"
-				}]
 			},
 			"blood curse of binding" : {
 				name : "Blood Curse of Binding",
 				source : [["MM:BH", 11]],
 				description : desc([
-					"As a bonus action, I can bind a target I can see within 30 ft up to one size larger than me",
-					"It must make a Str save or have 0 speed and can't use reactions until my next turn ends",
+					"As a bonus action, you force a Large or smaller creature you can see within 30ft to make a Str saving throw",
+					"On a failure, the cursed creature’s speed is reduced to 0 and it can’t use reactions until the end of your next turn",
 					"\u2022 Amplify: The curse lasts for 1 minute and can affect creatures of any size",
-					"  At the end of each of the target's turns, it can make another Str save to end the curse"
+					"  The cursed creature repeats the saving throw at the end of each of its turns, ending the curse on a success"
 				]),
 				action : [["bonus action", ""]]
 			},
@@ -123,10 +120,35 @@ ClassList["blood hunter"] = {
 				source : [["MM:BH", 11]],
 				description : desc([
 					"As a bonus action, I can curse a target I can see within 30 ft until the end of my next turn",
-					"It has disadv. on Str \u0026 Dex checks and takes 1d8 necrotic damage if it attacks on its turn",
-					"\u2022 Amplify: Lasts for 1 min; After each of its turns, the target can make Con save to end it"
+					"It has disadv. on Str \u0026 Dex checks and takes 1d8 necrotic damage if it makes more than one attack on its turn",
+					"\u2022 Amplify: Lasts for 1 min",
+					"   After each of its turns, the target can make Con save to end the curse"
 				]),
 				action : [["bonus action", ""]]
+			},
+			"blood curse of corrosion" : {
+				name : "Blood Curse of Corrosion",
+				source : [["MM:BH", 11]],
+				description : desc([
+					"As a bonus action, I can curse a target I can see within 30 ft to be poisoned",
+					"It can make a Con save at the end of each of its turns",
+					"\u2022 Amplify: The target takes 4d6 necrotic damage when the curse is first applied and then again for each save failure"				]),
+				action : [["bonus action", ""]],
+				prereqeval : function() { return subclasses.known['mutant'].level >= 15 }
+
+			},
+			"blood curse of the exorcist" : {
+				name : "Blood Curse of the Exorcist",
+				source : [["MM:BH", 11]],
+				description : desc([
+					"As a bonus action, choose a target with 30ft that is charmed, frightened, or possessed",
+					"The target is no longer charmed, frightened, or possessed.",
+					"\u2022 Amplify: The creature that caused your target to be frightened, charmed, or possessed takes 3d6 psychic damage",
+					"This creatures must also succeed on a Wis save or be stunned until the end of your next turn"				
+				]),
+				action : [["bonus action", ""]],
+				prereqeval : function() { return subclasses.known['ghostslayer'].level >= 15 }
+
 			},
 			"blood curse of exposure" : {
 				name : "Blood Curse of Exposure",
@@ -134,7 +156,7 @@ ClassList["blood hunter"] = {
 				description : desc([
 					"As a reaction when a target I can see in 30 ft is hit with an attack or spell, I can weaken it",
 					"Until the end of the turn, it loses resistance to the damage types of the initial attack/spell",
-					"\u2022 Amplify: Its immunities to the damage types count as resistance until the end of the turn"
+					"\u2022 Amplify: Its immunities to the damage types count as resistance until the end of its next turn"
 				]),
 				action : [["reaction", ""]]
 			},
@@ -145,7 +167,8 @@ ClassList["blood hunter"] = {
 					"As a reaction when a creature I can see in 30 ft makes an attack roll, I can intervene",
 					"Before I know if it hits or not, I roll a hemocraft die and subtract it from the attack roll",
 					"Creatures immune to blindness are not affected by this",
-					"\u2022 Amplify: apply to all of the target's attacks this turn; Separate hemocraft die roll for each"
+					"\u2022 Amplify: apply to all of the target's attacks until the end of their turn",
+					"   Roll separate hemocraft die roll for each attack"
 				]),
 				action : [["reaction", ""]]
 			},
@@ -156,17 +179,30 @@ ClassList["blood hunter"] = {
 					"As a reaction when a creature I can see in 30 ft drops to 0 HP, I can make it attack",
 					"It makes one weapon attack against a target of my choice within its attack range",
 					"\u2022 Amplify: Before making the attack, I can move the creature up to half its speed",
-					"   Also, the attack and damage roll gain a bonus equal to my Intelligence modifier (min 1)"
+					"   Also, the attack and damage roll gain a bonus equal to my Hemocraft modifier (min 1)"
 				]),
 				action : [["reaction", ""]]
+			},
+			"blood curse of the howl" : {
+				name : "Blood Curse of the Howl",
+				source : [["MM:BH", 11]],
+				description : desc([
+					"As an action, you howl casuing any number of creatures with 30ft that can hear to make a Wis saving throw",
+					"On a failure, a creature becomes frightened of you until the end of yopur next turn",
+					"If a creatures fails by 5 or more, it is also stunned",
+					"If a creature succeeds, they become immune to this curse for 24 hours",
+					"\u2022 Amplify: The range is increased to 60ft"				]),
+				action : [["action", ""]],
+				prereqeval : function() { return subclasses.known['lycan'].level >= 18 }
+
 			},
 			"blood curse of the marked" : {
 				name : "Blood Curse of the Marked",
 				source : [["MM:BH", 12]],
 				description : desc([
 					"As a bonus action, I can mark an enemy within 30 ft of me until the end of my turn",
-					"When I deal rite damage to the marked target, I deal an additional hemocraft die",
-					"\u2022 Amplify: My next attack against the target before the end of my turn has advantage"
+					"When I deal rite damage to the marked target, I deal an additional hemocraft die of damage",
+					"\u2022 Amplify: My next attack against the target before the end of my turn has adv."
 				]),
 				action : [["bonus action", ""]]
 			},
@@ -179,7 +215,23 @@ ClassList["blood hunter"] = {
 					"\u2022 The target has disadv. on all concentration saves before the end of my next turn"
 				]),
 				action : [["bonus action", ""]]
-			}
+			},
+			"blood curse of the soul eater" : {
+				name : "Blood Curse of the Soul Eater",
+				source : [["MM:BH", 11]],
+				description : desc([
+					"As a reaction, choose a non-construct or non-undead target within 30ft whose hit points are reduced to 0",
+					"Until the end of your next turn you have adv. on atacks and resistance to all damage types",
+					"\u2022 Amplify: You regain an expended warlock spell slot",
+					"You can only amplify this curse once per long rest"				
+				]),
+				action : [["bonus action", ""]],
+				prereqeval : function() { return subclasses.known['profane soul'].level >= 18 }
+		extraLimitedFeatures : [{
+					additional : "Amplify Blood Curse of the Soul Eater",
+					usages : 1,
+					recovery : "long rest"
+			},
 		},
 		"hemocraft die" : {
 			name : "Hemocraft Die",
